@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "tcp_handler.h": "c",
+        "w5500_spi_handler.h": "c"
+    }
+}
