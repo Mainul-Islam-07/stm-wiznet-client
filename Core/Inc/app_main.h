@@ -35,7 +35,13 @@ typedef struct{
 
 }GlobalParam;
 
+typedef struct {
+    uint8_t ip[4];
+    uint16_t port;
+} RemoteHost; //Mainul
+
 extern GlobalParam global;
+extern RemoteHost server;
 
 extern SPI_HandleTypeDef hspi1;
 /********Function Prototypes************/

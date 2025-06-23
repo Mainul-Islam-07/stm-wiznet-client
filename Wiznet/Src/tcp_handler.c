@@ -17,7 +17,8 @@ uint8_t recv_buf[MAX_SOCK_NUM][32] = {0};
 uint8_t client_ip[MAX_SOCK_NUM][4] = {0};
 
 uint8_t sn;
-
+int8_t get_result; // Mainuk
+uint8_t socket_result;
 
 void W5500_Handle_Events(void)
 {
@@ -35,10 +36,22 @@ void W5500_Handle_Events(void)
         if (w5500_event_flags[sn].timeout)
             handle_timeout(sn);
 
+        if (w5500_event_flags[sn].sent)
+            handle_sent(sn);
 
-//        if (w5500_event_flags[sn].sent)
-//            handle_sent(sn);
         sock_status[sn] = getSn_SR(sn);
+//        if (sock_status[sn] != SOCK_STATUS_ESTABLISHED){
+//        	get_result = connect(sn, server.ip, server.port);
+//        	HAL_Delay(100);
+//        }
+
+        if (sock_status[sn] == SOCK_STATUS_INIT) {
+//        	get_result = connect(sn, server.ip, server.port);
+        	get_result = connect(sn, server.ip, server.port);
+
+        	HAL_Delay(100);
+        }
+
         if (sock_status[sn] == SOCK_STATUS_CLOSE_WAIT || sock_status[sn] == SOCK_STATUS_CLOSED){
                     W5500_Close_Socket();
 
@@ -54,17 +67,16 @@ void W5500_Close_Socket(void){
 				printf("Connection in closing state, restarting...\r\n");
 				disconnect(sn);
 				closesock(sn);
-				listen(sn);
+//				listen(sn);
 
 
 }
 
 void W5500_Init_Sockets(void) {
-    for (uint8_t sn = 0; sn < MAX_SOCK_NUM; sn++) {
-        if (socket(sn, Sn_MR_TCP, SERVER_PORT, 0) == sn) {
-            listen(sn);
-        }
-    }
+
+    	socket_result = socket(0, Sn_MR_TCP, SERVER_PORT, 0);
+
+
 }
 
 
@@ -89,7 +101,7 @@ void handle_disconnection(uint8_t sn) {
     disconnect(sn);
     closesock(sn);
     socket(sn, Sn_MR_TCP, SERVER_PORT, 0);
-    listen(sn);
+//    listen(sn);
 
     memset(&w5500_event_flags[sn], 0, sizeof(W5500_EventFlags));
 }
@@ -111,7 +123,7 @@ void handle_timeout(uint8_t sn) {
     disconnect(sn);
     closesock(sn);
     socket(sn, Sn_MR_TCP, SERVER_PORT, 0);
-    listen(sn);
+//    listen(sn);
 
     memset(&w5500_event_flags[sn], 0, sizeof(W5500_EventFlags));
 }
@@ -134,7 +146,7 @@ void W5500_InterruptHandler(void) {
 			w5500_event_flags[sn].disconnected = (ir & Sn_IR_DISCON) ? 1 : 0;
 			w5500_event_flags[sn].received = (ir & Sn_IR_RECV) ? 1 : 0;
 			w5500_event_flags[sn].timeout = (ir & Sn_IR_TIMEOUT) ? 1 : 0;
-			//w5500_event_flags[sn].sent = (ir & Sn_IR_SENDOK) ? 1 : 0;
+			w5500_event_flags[sn].sent = (ir & Sn_IR_SENDOK) ? 1 : 0;
 
 			setSn_IR(sn, ir);  // Clear all flags that are set
 		}

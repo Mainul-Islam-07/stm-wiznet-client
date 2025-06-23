@@ -63,6 +63,9 @@ void W5500_Enable_Interrupts(void) {
     setIMR(IM_IR7 | IM_IR6 | IM_IR5 | IM_IR4); // Global interrupts
     setSIMR(0xFF); // Enable socket interrupts for all sockets
     setSn_IMR(SOCK_0, (Sn_IR_CON | Sn_IR_DISCON | Sn_IR_RECV | Sn_IR_TIMEOUT));
+//    for (uint8_t i = 0; i < _WIZCHIP_SOCK_NUM_; i++) {
+//            setSn_IMR(i, (Sn_IR_CON | Sn_IR_DISCON | Sn_IR_RECV | Sn_IR_TIMEOUT)); // Mainul 22 June 2025
+//        }
 }
 
 

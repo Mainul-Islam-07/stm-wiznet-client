@@ -9,7 +9,7 @@
 #include "w5500.h"
 #include "w5500_spi_handler.h"
 
-#define MAX_SOCK_NUM 8
+#define MAX_SOCK_NUM 1
 #define SERVER_PORT 8080
 
 
@@ -38,6 +38,7 @@ typedef enum {
 extern W5500_EventFlags w5500_event_flags[];
 extern uint8_t sn;
 extern sock_state_t sock_status[MAX_SOCK_NUM];
+
 
 //void W5500_Enable_Interrupts(void);
 void W5500_Handle_Events(void);

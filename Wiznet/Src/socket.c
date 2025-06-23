@@ -857,6 +857,7 @@ int8_t  setsockopt(uint8_t sn, sockopt_type sotype, void* arg)
          		{
          			setSn_IR(sn, Sn_IR_TIMEOUT);
                   return SOCKERR_TIMEOUT;
+
          		}
             }
          break;

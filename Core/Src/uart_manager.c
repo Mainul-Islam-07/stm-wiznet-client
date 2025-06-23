@@ -46,7 +46,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
             tempBuffer[Size] = '\0';  // Optional: null-terminate
 
             // 3. Send to socket
-            SendToSocket(0, tempBuffer, Size);
+//            SendToSocket(0, tempBuffer, Size);
 
             // 4. Free the buffer
             free(tempBuffer);
