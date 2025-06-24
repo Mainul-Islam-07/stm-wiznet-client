@@ -10,9 +10,9 @@
 #include "w5500_spi_handler.h"
 
 #define MAX_SOCK_NUM 1
-#define SERVER_PORT 8080
+#define SERVER_PORT 8000
 
-
+#define Socket_0 0
 
 typedef struct {
     uint8_t socket;

@@ -17,7 +17,8 @@ uint8_t recv_buf[MAX_SOCK_NUM][32] = {0};
 uint8_t client_ip[MAX_SOCK_NUM][4] = {0};
 
 uint8_t sn;
-int8_t get_result; // Mainuk
+
+
 uint8_t socket_result;
 
 void W5500_Handle_Events(void)
@@ -40,17 +41,7 @@ void W5500_Handle_Events(void)
             handle_sent(sn);
 
         sock_status[sn] = getSn_SR(sn);
-//        if (sock_status[sn] != SOCK_STATUS_ESTABLISHED){
-//        	get_result = connect(sn, server.ip, server.port);
-//        	HAL_Delay(100);
-//        }
 
-        if (sock_status[sn] == SOCK_STATUS_INIT) {
-//        	get_result = connect(sn, server.ip, server.port);
-        	get_result = connect(sn, server.ip, server.port);
-
-        	HAL_Delay(100);
-        }
 
         if (sock_status[sn] == SOCK_STATUS_CLOSE_WAIT || sock_status[sn] == SOCK_STATUS_CLOSED){
                     W5500_Close_Socket();
@@ -74,7 +65,10 @@ void W5500_Close_Socket(void){
 
 void W5500_Init_Sockets(void) {
 
-    	socket_result = socket(0, Sn_MR_TCP, SERVER_PORT, 0);
+    	socket_result = socket(Socket_0, Sn_MR_TCP, SERVER_PORT, 0);
+    	HAL_Delay(500);
+    	sock_status[Socket_0] = getSn_SR(Socket_0);
+    	HAL_Delay(100);
 
 
 }
@@ -82,14 +76,14 @@ void W5500_Init_Sockets(void) {
 
 void handle_connection(uint8_t sn) {
     // Wait for established state before reading DIPR
-    if (getSn_SR(sn) == SOCK_ESTABLISHED) {
-        getSn_DIPR(sn, client_ip[sn]);
-        printf("Socket %d connected from %d.%d.%d.%d", sn,
-               client_ip[sn][0], client_ip[sn][1], client_ip[sn][2], client_ip[sn][3]);
-    } else {
-        memset(client_ip[sn], 0, 4);
-        printf("Socket %d connection event, but not established ", sn);
-    }
+//    if (getSn_SR(sn) == SOCK_ESTABLISHED) {
+//        getSn_DIPR(sn, client_ip[sn]);
+//        printf("Socket %d connected from %d.%d.%d.%d", sn,
+//               client_ip[sn][0], client_ip[sn][1], client_ip[sn][2], client_ip[sn][3]);
+//    } else {
+//        memset(client_ip[sn], 0, 4);
+//        printf("Socket %d connection event, but not established ", sn);
+//    }
 
     memset(&w5500_event_flags[sn], 0, sizeof(W5500_EventFlags));
 }
@@ -102,6 +96,11 @@ void handle_disconnection(uint8_t sn) {
     closesock(sn);
     socket(sn, Sn_MR_TCP, SERVER_PORT, 0);
 //    listen(sn);
+
+    if (sock_status[sn] == SOCK_STATUS_INIT ){
+   	connect(sn, server.ip, server.port);
+   	HAL_Delay(2000);
+   	}
 
     memset(&w5500_event_flags[sn], 0, sizeof(W5500_EventFlags));
 }

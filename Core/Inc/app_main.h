@@ -42,7 +42,7 @@ typedef struct {
 
 extern GlobalParam global;
 extern RemoteHost server;
-
+extern int8_t get_result;
 extern SPI_HandleTypeDef hspi1;
 /********Function Prototypes************/
 void init(void);
