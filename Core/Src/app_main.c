@@ -17,19 +17,19 @@ W5500_GPIO_Config_t w5500_config = {
   };
 
   wiz_NetInfo netInfo = {
-      .mac = { 0x00, 0x08, 0xdc, 0xab, 0xcd, 0xef },
-      .ip = { 192, 168, 20, 10 },
+      .mac = { 0x02, 0x12, 0x34, 0x56, 0x78, 0x02 },
+      .ip = { 192, 168, 1, 101 },
       .sn = { 255, 255, 255, 0 },
-      .gw = { 192, 168, 20, 1 },
-      .dns = { 8, 8, 8, 8 },
+      .gw = { 0, 0, 0, 0 },
+      .dns = { 0, 0, 0, 0 },
       .dhcp = NETINFO_STATIC
   };
 
 
 
   RemoteHost server = {
-      .ip = {192, 168, 20, 14},
-      .port = 8080
+      .ip = {192, 168, 1, 100},
+      .port = 8000
   }; //Mainul
 
 
@@ -46,7 +46,7 @@ void init(void){
 	  HAL_Delay(100);
 	  //Initialize Wiznet w5500 with GPIOs, SPI and NetInfo
 	  W5500Init(&w5500_config,&netInfo);
-	  HAL_Delay(500);
+	  HAL_Delay(1000);
 	  W5500_Init_Sockets();
 
 }
@@ -70,14 +70,15 @@ void loop(void){
 //	}
 
 if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
-			connect(Socket_0, server.ip, server.port);
+			HAL_Delay(2000);
+	get_result = connect(Socket_0, server.ip, server.port);
 			HAL_Delay(2000);
 			}
 
 
 
  if (sock_status[Socket_0] == SOCK_STATUS_ESTABLISHED){
-//	send(Socket_0, (uint8_t *)msg, strlen(msg));
+	send(Socket_0, (uint8_t *)msg, strlen(msg));
     HAL_Delay(500);
  }
 

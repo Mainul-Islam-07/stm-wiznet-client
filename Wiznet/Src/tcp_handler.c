@@ -66,9 +66,10 @@ void W5500_Close_Socket(void){
 void W5500_Init_Sockets(void) {
 
     	socket_result = socket(Socket_0, Sn_MR_TCP, SERVER_PORT, 0);
+//		socket_result = socket(Socket_0, Sn_MR_TCP, server.port, 0);
     	HAL_Delay(500);
     	sock_status[Socket_0] = getSn_SR(Socket_0);
-    	HAL_Delay(100);
+    	HAL_Delay(500);
 
 
 }
@@ -95,6 +96,7 @@ void handle_disconnection(uint8_t sn) {
     disconnect(sn);
     closesock(sn);
     socket(sn, Sn_MR_TCP, SERVER_PORT, 0);
+//    socket(sn, Sn_MR_TCP, server.port, 0);
 //    listen(sn);
 
     if (sock_status[sn] == SOCK_STATUS_INIT ){
@@ -122,7 +124,8 @@ void handle_timeout(uint8_t sn) {
     disconnect(sn);
     closesock(sn);
     socket(sn, Sn_MR_TCP, SERVER_PORT, 0);
-//    listen(sn);
+    HAL_Delay(2000);
+
 
     memset(&w5500_event_flags[sn], 0, sizeof(W5500_EventFlags));
 }
@@ -152,13 +155,12 @@ void W5500_InterruptHandler(void) {
 	}
 }
 
-uint8_t socket_test[UART_BUFFER_SIZE];
+
 
 
 int8_t SendToSocket(uint8_t sn, const char *msg, uint16_t len)
 {
     if (getSn_SR(sn) == SOCK_ESTABLISHED) {
-    	memcpy (socket_test, msg, UART_BUFFER_SIZE);
 //    	int32_t result = send(sn, (uint8_t *)msg, strlen(msg));
     	int32_t result = send(sn, (uint8_t *)msg, len); //NEW
         if (result > 0) {
