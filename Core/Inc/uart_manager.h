@@ -13,11 +13,8 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define UART_BUFFER_SIZE 30
-
-extern char uartRxBuffer[UART_BUFFER_SIZE];
-
-//extern uint8_t uartRxBuffer[UART_BUFFER_SIZE]; //NEW
+#define MAX_UART_BUF 128
+extern char uartRxBuffer[MAX_UART_BUF];
 
 void startUartDMA(UART_HandleTypeDef *huart) ;
 void uartTransmitDMA(UART_HandleTypeDef *huart, const char* data);

@@ -4,58 +4,30 @@
 #include "main.h"
 #include "stdlib.h"
 
+uint16_t uart_rx_size = 0;
 
-
-// UART DMA Buffer
-char uartRxBuffer[UART_BUFFER_SIZE];
-//uint8_t uartRxBuffer[UART_BUFFER_SIZE]; //NEW
+char uartRxBuffer [MAX_UART_BUF];
 
 // Start UART DMA Reception
 void startUartDMA(UART_HandleTypeDef *huart) {
-	HAL_UARTEx_ReceiveToIdle_DMA(huart, (uint8_t*)uartRxBuffer, UART_BUFFER_SIZE); //TO DO dynamic RX data
+	HAL_UARTEx_ReceiveToIdle_DMA(huart, (uint8_t*)uartRxBuffer, MAX_UART_BUF); //TO DO dynamic RX data
 
 }
 
-//// UART RX Complete Callback
-//void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size){
-//    if (huart->Instance == USART2) {
-//
-//
-//
-//
-//
-//    	SendToSocket(0, (const char *)uartRxBuffer); // NEW
-//
-////        memset(uartRxBuffer, 0, Size);  // Clear Buffer
-//        startUartDMA(global.comm_uart); // Restart DMA Reception
-//
-//    }
-//}
 
-// UART RX Complete Callback with dynamic socket send
+
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 {
-    if (huart->Instance == USART2 && Size > 0 && Size <= UART_BUFFER_SIZE)
+    if (huart->Instance == USART2 && Size > 0 && Size <= MAX_UART_BUF)
     {
-        // 1. Allocate exact-size dynamic buffer for received data
-        char* tempBuffer = (char*)malloc(Size + 1);  // +1 for null-terminator (if needed)
-        if (tempBuffer != NULL)
-        {
-            // 2. Copy only the received bytes
-            memcpy(tempBuffer, uartRxBuffer, Size);
-            tempBuffer[Size] = '\0';  // Optional: null-terminate
-
-            // 3. Send to socket
-//            SendToSocket(0, tempBuffer, Size);
-
-            // 4. Free the buffer
-            free(tempBuffer);
-        }
-
-        // 5. Restart DMA reception
+		uartRxBuffer[Size] = '\0';
+		SendToSocket(Socket_0, uartRxBuffer, Size+1);
         startUartDMA(global.comm_uart);
     }
 }
+
+
+
 
 void uartTransmitDMA(UART_HandleTypeDef *huart, const char* data){
 	HAL_UART_Transmit_DMA(huart, (uint8_t*) data, strlen(data));

@@ -1,8 +1,5 @@
-
-
 #include "app_main.h"
 #include "tcp_handler.h"
-
 
 GlobalParam global;
 
@@ -25,17 +22,11 @@ W5500_GPIO_Config_t w5500_config = {
       .dhcp = NETINFO_STATIC
   };
 
-
-
   RemoteHost server = {
       .ip = {192, 168, 1, 100},
       .port = 8000
-  }; //Mainul
+  };
 
-
-const char *msg = "Hello";
-
-int8_t get_result = 0;
 
 void init(void){
 	global.debug_uart 	 = &huart3;
@@ -43,7 +34,7 @@ void init(void){
 
 	  HAL_Delay(500);
 	  startUartDMA(global.comm_uart);
-	  HAL_Delay(100);
+	  HAL_Delay(1000);
 	  //Initialize Wiznet w5500 with GPIOs, SPI and NetInfo
 	  W5500Init(&w5500_config,&netInfo);
 	  HAL_Delay(1000);
@@ -55,32 +46,11 @@ void init(void){
 void loop(void){
 	W5500_Handle_Events();
 
-//	if (get_result == 0){
-//		get_result = connect(0, server.ip, server.port);
-//		HAL_Delay(2000);
-//	}
-//
-//	if (get_result < 0 ){
-//		get_result = 0;
-//		disconnect(0);
-//		closesock(0);
-//		HAL_Delay(10);
-//		socket(0, Sn_MR_TCP, SERVER_PORT, 0);
-//		HAL_Delay(10);
-//	}
-
 if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
-			HAL_Delay(2000);
-	get_result = connect(Socket_0, server.ip, server.port);
-			HAL_Delay(2000);
+	HAL_Delay(2000);
+	connect(Socket_0, server.ip, server.port);
+	HAL_Delay(2000);
 			}
-
-
-
- if (sock_status[Socket_0] == SOCK_STATUS_ESTABLISHED){
-	send(Socket_0, (uint8_t *)msg, strlen(msg));
-    HAL_Delay(500);
- }
 
 }
 
