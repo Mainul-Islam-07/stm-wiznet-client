@@ -3,6 +3,8 @@
 
 GlobalParam global;
 
+uint8_t physical_conn = 0;
+
 W5500_GPIO_Config_t w5500_config = {
       .cs_port = W5500_CS_GPIO_Port,         // Replace with your CS GPIO port
       .cs_pin = W5500_CS_Pin,    // Replace with your CS GPIO pin
@@ -31,10 +33,12 @@ W5500_GPIO_Config_t w5500_config = {
 void init(void){
 	global.debug_uart 	 = &huart3;
 	global.comm_uart  	 = &huart2;
+	global.dma_uart_rx   = &hdma_usart2_rx;
+	global.dma_uart_tx   = &hdma_usart2_rx;
 
 	  HAL_Delay(500);
 	  startUartDMA(global.comm_uart);
-	  HAL_Delay(1000);
+//	  HAL_Delay(1000);
 	  //Initialize Wiznet w5500 with GPIOs, SPI and NetInfo
 	  W5500Init(&w5500_config,&netInfo);
 	  HAL_Delay(1000);
@@ -44,13 +48,23 @@ void init(void){
 
 
 void loop(void){
+	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	W5500_Handle_Events();
 
-if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
-	HAL_Delay(2000);
-	connect(Socket_0, server.ip, server.port);
-	HAL_Delay(2000);
-			}
+	sock_status[Socket_0] = getSn_SR(Socket_0);
+	physical_conn = getPHYCFGR() & 0x01;
+	if((getPHYCFGR() & 0x01) == 0){
+		HAL_Delay(5000);
+		if((getPHYCFGR() & 0x01) == 0){
+			W5500_Close_Socket();
+		}
+	}
+
+	if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
+			connect(Socket_0, server.ip, server.port);
+			HAL_Delay(1000);
+	}
+
 
 }
 

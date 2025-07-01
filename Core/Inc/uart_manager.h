@@ -13,9 +13,9 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define MAX_UART_BUF 128
+#define MAX_UART_BUF 64
 extern char uartRxBuffer[MAX_UART_BUF];
 
 void startUartDMA(UART_HandleTypeDef *huart) ;
-void uartTransmitDMA(UART_HandleTypeDef *huart, const char* data);
+void uartTransmitDMA(UART_HandleTypeDef *huart, const char* data, size_t length);
 #endif /* INC_UART_MANAGER_H_ */

@@ -28,6 +28,8 @@ typedef struct{
 	uint32_t sysClk;
 	UART_HandleTypeDef *debug_uart;
 	UART_HandleTypeDef *comm_uart;
+	DMA_HandleTypeDef *dma_uart_rx;
+	DMA_HandleTypeDef *dma_uart_tx;
 	uint32_t msg_counter;
 
 

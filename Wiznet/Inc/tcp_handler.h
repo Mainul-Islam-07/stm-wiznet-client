@@ -13,7 +13,7 @@
 #define SERVER_PORT 8080
 
 
-#define MAX_TCP_BUF 32
+#define MAX_TCP_BUF 64
 
 #define Socket_0 0
 

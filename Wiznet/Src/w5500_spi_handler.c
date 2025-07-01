@@ -51,7 +51,7 @@ void wizchip_writeburst(uint8_t *pBuf, uint16_t len) {
 }
 void check_phy_status(void) {
     if (!(getPHYCFGR() & PHYCFGR_LNK_ON)) {
-        printf("\n\rPHY GONE!\n\r");
+        //printf("\n\rPHY GONE!\n\r");
 
         W5500Init(&w5500_config,&netInfo);
         W5500_Init_Sockets();
@@ -72,8 +72,11 @@ void W5500_Enable_Interrupts(void) {
 // W5500 Initialization
 void W5500Init(W5500_GPIO_Config_t *gpio_config, wiz_NetInfo *net_info) {
     uint8_t tmp;
-    uint8_t memsize[2][8] = {{4, 2, 2, 2, 2, 2, 1, 1}, {4, 2, 2, 2, 2, 2, 1, 1}};
-
+//    uint8_t memsize[2][8] = {{4, 2, 2, 2, 2, 2, 1, 1}, {4, 2, 2, 2, 2, 2, 1, 1}};
+    uint8_t memsize[2][8] = {
+        {16, 0, 0, 0, 0, 0, 0, 0},  // TX memory allocation: 16KB to socket 0
+        {16, 0, 0, 0, 0, 0, 0, 0}   // RX memory allocation: 16KB to socket 0
+    };
     // Save GPIO configuration
     w5500_gpio_config = *gpio_config;
 
@@ -92,35 +95,35 @@ void W5500Init(W5500_GPIO_Config_t *gpio_config, wiz_NetInfo *net_info) {
 
     // Initialize W5500
     if (ctlwizchip(CW_INIT_WIZCHIP, (void *)memsize) == -1) {
-        printf("Wizchip failed to initialize.\r\n");
+        //printf("Wizchip failed to initialize.\r\n");
         while (1);
     }
 
     W5500_Enable_Interrupts();
-    printf("Wizchip initialized successfully.\r\n");
+    //printf("Wizchip initialized successfully.\r\n");
 
     // Set the network information
     if (net_info != NULL) {
         wizchip_setnetinfo(net_info);
-        printf("Network information set successfully.\r\n");
+        //printf("Network information set successfully.\r\n");
     } else {
-        printf("Invalid network information.\r\n");
+        //printf("Invalid network information.\r\n");
         while (1);
     }
 
     // Optionally, retrieve and verify the network configuration
     wizchip_getnetinfo(net_info);
-    printf("MAC: %02X:%02X:%02X:%02X:%02X:%02X\r\n",
-           net_info->mac[0], net_info->mac[1], net_info->mac[2],
-           net_info->mac[3], net_info->mac[4], net_info->mac[5]);
-    printf("IP: %d.%d.%d.%d\r\n",
-           net_info->ip[0], net_info->ip[1], net_info->ip[2], net_info->ip[3]);
-    printf("Subnet Mask: %d.%d.%d.%d\r\n",
-           net_info->sn[0], net_info->sn[1], net_info->sn[2], net_info->sn[3]);
-    printf("Gateway: %d.%d.%d.%d\r\n",
-           net_info->gw[0], net_info->gw[1], net_info->gw[2], net_info->gw[3]);
-    printf("DNS: %d.%d.%d.%d\r\n",
-           net_info->dns[0], net_info->dns[1], net_info->dns[2], net_info->dns[3]);
+//    printf("MAC: %02X:%02X:%02X:%02X:%02X:%02X\r\n",
+//           net_info->mac[0], net_info->mac[1], net_info->mac[2],
+//           net_info->mac[3], net_info->mac[4], net_info->mac[5]);
+//    printf("IP: %d.%d.%d.%d\r\n",
+//           net_info->ip[0], net_info->ip[1], net_info->ip[2], net_info->ip[3]);
+//    printf("Subnet Mask: %d.%d.%d.%d\r\n",
+//           net_info->sn[0], net_info->sn[1], net_info->sn[2], net_info->sn[3]);
+//    printf("Gateway: %d.%d.%d.%d\r\n",
+//           net_info->gw[0], net_info->gw[1], net_info->gw[2], net_info->gw[3]);
+//    printf("DNS: %d.%d.%d.%d\r\n",
+//           net_info->dns[0], net_info->dns[1], net_info->dns[2], net_info->dns[3]);
 }
 
 
