@@ -13,7 +13,7 @@
 #define SERVER_PORT 8000
 
 
-#define MAX_TCP_BUF 128
+#define MAX_TCP_BUF 32
 
 #define Socket_0 0
 
@@ -54,5 +54,7 @@ void handle_timeout(uint8_t sn);
 void handle_sent(uint8_t sn);
 void SendToSocket(uint8_t sn, const char *msg, uint16_t len);
 void W5500_Close_Socket(void);
+
+void clear_receive_buffer(uint8_t sn);
 
 #endif /* INC_TCP_HANDLER_H_ */

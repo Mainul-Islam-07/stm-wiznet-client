@@ -61,6 +61,7 @@ void W5500_Init_Sockets(void) {
 	if (socket(Socket_0, Sn_MR_UDP, SERVER_PORT, 0) == Socket_0) {
 		setSn_MR(Socket_0, Sn_MR_UDP);  // Make sure it is in UDP mode
     	HAL_Delay(1000);
+    	clear_receive_buffer(Socket_0);
 //    	if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
 //    	connect(Socket_0, server.ip, server.port);
 //    	HAL_Delay(1000);
@@ -91,7 +92,8 @@ void handle_received(uint8_t sn) {
 	 SN_RX_RSR_Size = getSn_RX_RSR(sn);
 //    if (SN_RX_RSR_Size > 0 && SN_RX_RSR_Size <= sizeof(recv_buf[sn])) {
 //    	 tcp_recv_len = recv(sn, recv_buf[sn], SN_RX_RSR_Size);
-    	tcp_recv_len = recvfrom(sn, (uint8_t *)recv_buf[sn], SN_RX_RSR_Size, client_ip[sn], &remotePort);
+//    	tcp_recv_len = recvfrom(sn, (uint8_t *)recv_buf[sn], SN_RX_RSR_Size, client_ip[sn], &remotePort);
+    	tcp_recv_len = recvfrom(sn, (uint8_t *)recv_buf[sn], sizeof(recv_buf[sn]), client_ip[sn], &remotePort);
 
     	count_tcp_output = count_tcp_output + tcp_recv_len;
     	if (tcp_recv_len > 0) {
@@ -154,6 +156,24 @@ void SendToSocket(uint8_t sn, const char *msg, uint16_t len)
 //        //printf("Socket %d not connected\n", sn);
 //        return -1; // Socket not established
 //    }
+}
+
+void clear_receive_buffer(uint8_t sn) {
+    int32_t SN_RX_RSR_Size = getSn_RX_RSR(sn);  // Get the size of the received data
+
+    // Loop to read and discard all data in the buffer
+    while (SN_RX_RSR_Size > 0) {
+        uint16_t remotePort = 0;
+        char temp_buf[64];  // Temporary buffer for discarding data
+
+        // Read the available data into the temporary buffer (we don't need to process it, just discard it)
+        recvfrom(sn, (uint8_t *)temp_buf, SN_RX_RSR_Size, client_ip[sn], &remotePort);
+
+        // After reading, check for remaining data in the buffer
+        SN_RX_RSR_Size = getSn_RX_RSR(sn);  // Get the remaining size of data
+    }
+
+    printf("Old data discarded successfully.\n");
 }
 
 
