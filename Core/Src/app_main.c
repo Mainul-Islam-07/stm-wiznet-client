@@ -51,6 +51,8 @@ void loop(void){
 	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	W5500_Handle_Events();
 
+
+
 	sock_status[Socket_0] = getSn_SR(Socket_0);
 	physical_conn = getPHYCFGR() & 0x01;
 	if((getPHYCFGR() & 0x01) == 0){
@@ -60,10 +62,10 @@ void loop(void){
 		}
 	}
 
-	if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
-			connect(Socket_0, server.ip, server.port);
-			HAL_Delay(1000);
-	}
+//	if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
+//			connect(Socket_0, server.ip, server.port);
+//			HAL_Delay(1000);
+//	}
 
 
 }

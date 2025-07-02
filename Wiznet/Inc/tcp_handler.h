@@ -10,10 +10,10 @@
 #include "w5500_spi_handler.h"
 
 #define MAX_SOCK_NUM 1
-#define SERVER_PORT 8080
+#define SERVER_PORT 8000
 
 
-#define MAX_TCP_BUF 64
+#define MAX_TCP_BUF 128
 
 #define Socket_0 0
 
@@ -52,7 +52,7 @@ void handle_disconnection(uint8_t sn);
 void handle_received(uint8_t sn);
 void handle_timeout(uint8_t sn);
 void handle_sent(uint8_t sn);
-int8_t SendToSocket(uint8_t sn, const char *msg, uint16_t len);
+void SendToSocket(uint8_t sn, const char *msg, uint16_t len);
 void W5500_Close_Socket(void);
 
 #endif /* INC_TCP_HANDLER_H_ */

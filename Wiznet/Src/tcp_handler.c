@@ -18,6 +18,8 @@ uint32_t count_tcp_input = 0;
 uint32_t count_tcp_output = 0;
 int32_t tcp_recv_len = 0;
 
+int32_t SN_RX_RSR_Size = 0 ;
+
 void W5500_Handle_Events(void)
 {
 
@@ -43,24 +45,26 @@ void W5500_Handle_Events(void)
                     W5500_Close_Socket();
         }
 
+
 }
 
 void W5500_Close_Socket(void){
 				//printf("Connection in closing state, restarting...\r\n");
 				disconnect(Socket_0);
 				closesock(Socket_0);
-				socket(Socket_0, Sn_MR_TCP, SERVER_PORT, 0);
+				socket(Socket_0, Sn_MR_UDP, SERVER_PORT, 0);
 				sock_status[Socket_0] = getSn_SR(Socket_0);
 				HAL_Delay(500);
 }
 
 void W5500_Init_Sockets(void) {
-	if (socket(Socket_0, Sn_MR_TCP, SERVER_PORT, 0) == Socket_0) {
+	if (socket(Socket_0, Sn_MR_UDP, SERVER_PORT, 0) == Socket_0) {
+		setSn_MR(Socket_0, Sn_MR_UDP);  // Make sure it is in UDP mode
     	HAL_Delay(1000);
-    	if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
-    	connect(Socket_0, server.ip, server.port);
-    	HAL_Delay(1000);
-    	}
+//    	if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
+//    	connect(Socket_0, server.ip, server.port);
+//    	HAL_Delay(1000);
+//    	}
 	}
 }
 
@@ -77,23 +81,24 @@ void handle_disconnection(uint8_t sn) {
 //    memset(client_ip[sn], 0, 4); // Reset client IP on disconnection
     disconnect(sn);
     closesock(sn);
-    socket(sn, Sn_MR_TCP, SERVER_PORT, 0);
+    socket(sn, Sn_MR_UDP, SERVER_PORT, 0);
     memset(&w5500_event_flags[sn], 0, sizeof(W5500_EventFlags));
     HAL_Delay(2000);
 }
 
 
 void handle_received(uint8_t sn) {
-	int32_t SN_RX_RSR_Size = getSn_RX_RSR(sn);
-    if (SN_RX_RSR_Size > 0 && SN_RX_RSR_Size <= sizeof(recv_buf[sn])) {
-    	 tcp_recv_len = recv(sn, recv_buf[sn], SN_RX_RSR_Size);
+	 SN_RX_RSR_Size = getSn_RX_RSR(sn);
+//    if (SN_RX_RSR_Size > 0 && SN_RX_RSR_Size <= sizeof(recv_buf[sn])) {
+//    	 tcp_recv_len = recv(sn, recv_buf[sn], SN_RX_RSR_Size);
+    	tcp_recv_len = recvfrom(sn, (uint8_t *)recv_buf[sn], SN_RX_RSR_Size, client_ip[sn], &remotePort);
 
     	count_tcp_output = count_tcp_output + tcp_recv_len;
     	if (tcp_recv_len > 0) {
             recv_buf[sn][tcp_recv_len] = '\0';
             uartTransmitDMA(global.comm_uart, (char *)recv_buf[sn], tcp_recv_len);//NEW
 
-        }
+//        }
     }
     memset(&w5500_event_flags[sn], 0, sizeof(W5500_EventFlags));
 }
@@ -102,7 +107,7 @@ void handle_timeout(uint8_t sn) {
     //printf("Timeout on socket %d\n", sn);
     disconnect(sn);
     closesock(sn);
-    socket(sn, Sn_MR_TCP, SERVER_PORT, 0);
+    socket(sn, Sn_MR_UDP, SERVER_PORT, 0);
     memset(&w5500_event_flags[sn], 0, sizeof(W5500_EventFlags));
     sock_status[sn] = getSn_SR(sn);
     HAL_Delay(2000);
@@ -132,7 +137,7 @@ void W5500_InterruptHandler(void) {
 
 
 
-int8_t SendToSocket(uint8_t sn, const char *msg, uint16_t len)
+void SendToSocket(uint8_t sn, const char *msg, uint16_t len)
 {
 //    if (getSn_SR(sn) == SOCK_ESTABLISHED) {
 //    	int32_t tcp_send_len = send(sn, (uint8_t *)msg, len); //NEW
