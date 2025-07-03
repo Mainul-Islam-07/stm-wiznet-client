@@ -48,7 +48,7 @@ void init(void){
 
 
 void loop(void){
-	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+//	HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	W5500_Handle_Events();
 
 

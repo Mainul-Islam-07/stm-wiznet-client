@@ -13,26 +13,21 @@ uint32_t count_uart_output = 0;
 // Start UART DMA Reception
 void startUartDMA(UART_HandleTypeDef *huart) {
 	HAL_UARTEx_ReceiveToIdle_DMA(huart, (uint8_t*)uartRxBuffer, MAX_UART_BUF); //TO DO dynamic RX data
-//	__HAL_DMA_DISABLE_IT(global.dma_uart, DMA_IT_HT);
-//	__HAL_DMA_DISABLE_IT(global.dma_uart_tx, DMA_IT_HT);
 
 }
 
 
 
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
+{
+	count_uart_input = count_uart_input + Size;
+
+	if (huart->Instance == USART2 && Size > 0 && Size <= MAX_UART_BUF)
 	{
-//	if (count_uart_input > 65535)
-//		{ count_uart_input = 0;}
-		count_uart_input = count_uart_input + Size;
-
-    if (huart->Instance == USART2 && Size > 0 && Size <= MAX_UART_BUF)
-    {
 		uartRxBuffer[Size] = '\0';
-
 		SendToSocket(Socket_0, uartRxBuffer, Size+1);
-        startUartDMA(global.comm_uart);
-    }
+		startUartDMA(global.comm_uart);
+	}
 }
 
 
@@ -40,40 +35,40 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 
 void uartTransmitDMA(UART_HandleTypeDef *huart, const char* data, size_t length ){
 
-
-//			count_uart_output = count_uart_output + sizeof(data);
 	count_uart_output = count_uart_output + length;
-//			__HAL_DMA_DISABLE_IT(global.dma_uart_tx, DMA_IT_HT);
-//	HAL_UART_Transmit_DMA(huart, (uint8_t*) data, sizeof(data));
+	if (count_uart_output > 100000){
+		count_uart_output = 0;
+	}
+
 	HAL_UART_Transmit_DMA(huart, (uint8_t*) data, length-1);
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-    if (huart->ErrorCode & HAL_UART_ERROR_PE)
-    {
-        //printf("UART Parity Error!\n");
-        __HAL_UART_CLEAR_PEFLAG(huart);
-    }
-    if (huart->ErrorCode & HAL_UART_ERROR_NE)
-    {
-        //printf("UART Noise Error!\n");
-        __HAL_UART_CLEAR_NEFLAG(huart);
-    }
-    if (huart->ErrorCode & HAL_UART_ERROR_FE)
-    {
-        //printf("UART Framing Error!\n");
-        __HAL_UART_CLEAR_FEFLAG(huart);
-    }
-    if (huart->ErrorCode & HAL_UART_ERROR_ORE)
-    {
-        //printf("UART Overrun Error!\n");
-        __HAL_UART_CLEAR_OREFLAG(huart);
-    }
+	if (huart->ErrorCode & HAL_UART_ERROR_PE)
+	{
+		//printf("UART Parity Error!\n");
+		__HAL_UART_CLEAR_PEFLAG(huart);
+	}
+	if (huart->ErrorCode & HAL_UART_ERROR_NE)
+	{
+		//printf("UART Noise Error!\n");
+		__HAL_UART_CLEAR_NEFLAG(huart);
+	}
+	if (huart->ErrorCode & HAL_UART_ERROR_FE)
+	{
+		//printf("UART Framing Error!\n");
+		__HAL_UART_CLEAR_FEFLAG(huart);
+	}
+	if (huart->ErrorCode & HAL_UART_ERROR_ORE)
+	{
+		//printf("UART Overrun Error!\n");
+		__HAL_UART_CLEAR_OREFLAG(huart);
+	}
 
-    // Abort and restart DMA
-    HAL_UART_Abort(huart);
-    startUartDMA(huart); // Restart your UART DMA
+	// Abort and restart DMA
+	HAL_UART_Abort(huart);
+	startUartDMA(huart); // Restart your UART DMA
 }
 
 

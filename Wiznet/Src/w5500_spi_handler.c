@@ -3,7 +3,7 @@
 #include "w5500.h"
 #include "tcp_handler.h"
 
-#define DATA_BUF_SIZE 128 //
+//#define DATA_BUF_SIZE 128 //
 static W5500_GPIO_Config_t w5500_gpio_config;
 
 uint8_t remoteIP[4];
