@@ -41,6 +41,7 @@ typedef enum {
 extern W5500_EventFlags w5500_event_flags[];
 extern uint8_t sn;
 extern sock_state_t sock_status[MAX_SOCK_NUM];
+extern uint32_t Wireless_timeout;
 
 
 //void W5500_Enable_Interrupts(void);

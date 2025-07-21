@@ -18,7 +18,9 @@ int32_t tcp_recv_len = 0;
 
 int32_t SN_RX_RSR_Size = 0 ;
 
+//volatile bool Wired_Connection = false;
 
+uint32_t Wireless_timeout = 0;
 
 void W5500_Handle_Events(void)
 {
@@ -90,7 +92,8 @@ void handle_received(uint8_t sn) {
 	if (count_tcp_output > 100000){
 		count_tcp_output = 0;
 	}
-
+//	Wired_Connection = true;
+	Wireless_timeout = HAL_GetTick();
 	if (tcp_recv_len > 0) {
 		recv_buf[sn][tcp_recv_len] = '\0';
 		uartTransmitDMA(global.comm_uart, (char *)recv_buf[sn], tcp_recv_len);//NEW

@@ -30,6 +30,8 @@ W5500_GPIO_Config_t w5500_config = {
   };
 
 
+
+
 void init(void){
 	global.debug_uart 	 = &huart3;
 	global.comm_uart  	 = &huart2;
@@ -60,6 +62,15 @@ void loop(void){
 		if((getPHYCFGR() & 0x01) == 0){
 			W5500_Close_Socket();
 		}
+	}
+
+	if ( HAL_GetTick() - Wireless_timeout > 9000 )
+	{
+		HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, SET);
+	}
+	else
+	{
+		HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, RESET);
 	}
 
 //	if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
