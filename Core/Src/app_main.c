@@ -64,7 +64,7 @@ void loop(void){
 		}
 	}
 
-	if ( HAL_GetTick() - Wireless_timeout > 9000 )
+	if ( HAL_GetTick() - Wireless_timeout > 5000 )
 	{
 		HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, SET);
 	}
