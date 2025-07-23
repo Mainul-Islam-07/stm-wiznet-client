@@ -1,5 +1,6 @@
 #include "app_main.h"
 #include "tcp_handler.h"
+#include "tim.h"
 
 GlobalParam global;
 
@@ -47,6 +48,7 @@ void init(void){
 	  W5500Init(&w5500_config,&netInfo);
 	  HAL_Delay(1000);
 	  W5500_Init_Sockets();
+	  HAL_TIM_Base_Start_IT(&htim1);
 
 }
 
@@ -66,15 +68,15 @@ void loop(void){
 		}
 	}
 
-	if ( HAL_GetTick() - Wireless_timeout > 5000 )
-	{
-		HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, SET);
-		Erase_Buffer = true ;
-	}
-	else
-	{
-		HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, RESET);
-	}
+//	if ( HAL_GetTick() - Wireless_timeout > 5000 )
+//	{
+//		HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, SET);
+//		Erase_Buffer = true ;
+//	}
+//	else
+//	{
+//		HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, RESET);
+//	}
 
 //	if(sock_status[Socket_0] == SOCK_STATUS_INIT ){
 //			connect(Socket_0, server.ip, server.port);
@@ -82,6 +84,15 @@ void loop(void){
 //	}
 
 
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if (htim->Instance == TIM1)
+    {
+    	HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, SET);
+    	Erase_Buffer = true ;
+    }
 }
 
 

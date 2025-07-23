@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "main.h"
 #include <inttypes.h>
+#include "tim.h"
 
 
 W5500_EventFlags w5500_event_flags[MAX_SOCK_NUM] = {0};
@@ -17,8 +18,6 @@ uint32_t count_tcp_output = 0;
 int32_t tcp_recv_len = 0;
 
 int32_t SN_RX_RSR_Size = 0 ;
-
-//volatile bool Wired_Connection = false;
 
 uint32_t Wireless_timeout = 0;
 
@@ -86,6 +85,9 @@ void handle_disconnection(uint8_t sn) {
 
 
 void handle_received(uint8_t sn) {
+	HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, RESET);
+	__HAL_TIM_SET_COUNTER(&htim1, 0);
+
 	if (Erase_Buffer == true){
 			Erase_Buffer = false;
 			clear_receive_buffer(Socket_0);
@@ -97,11 +99,11 @@ void handle_received(uint8_t sn) {
 	if (count_tcp_output > 100000){
 		count_tcp_output = 0;
 	}
-//	Wired_Connection = true;
 
 
 
-	Wireless_timeout = HAL_GetTick();
+
+//	Wireless_timeout = HAL_GetTick();
 	if (tcp_recv_len > 0) {
 		recv_buf[sn][tcp_recv_len] = '\0';
 		uartTransmitDMA(global.comm_uart, (char *)recv_buf[sn], tcp_recv_len);//NEW
