@@ -11,6 +11,7 @@
 #include "main.h"
 #include "usart.h"
 #include "uart_manager.h"
+#include "stdbool.h"
 
 
 
@@ -46,6 +47,7 @@ extern GlobalParam global;
 extern RemoteHost server;
 extern int8_t get_result;
 extern SPI_HandleTypeDef hspi1;
+extern volatile bool Erase_Buffer;
 /********Function Prototypes************/
 void init(void);
 void loop(void);

@@ -86,6 +86,11 @@ void handle_disconnection(uint8_t sn) {
 
 
 void handle_received(uint8_t sn) {
+	if (Erase_Buffer == true){
+			Erase_Buffer = false;
+			clear_receive_buffer(Socket_0);
+	}
+
 	SN_RX_RSR_Size = getSn_RX_RSR(sn);
 	tcp_recv_len = recvfrom(sn, (uint8_t *)recv_buf[sn], sizeof(recv_buf[sn]), client_ip[sn], &remotePort);
 	count_tcp_output = count_tcp_output + tcp_recv_len;
@@ -93,6 +98,9 @@ void handle_received(uint8_t sn) {
 		count_tcp_output = 0;
 	}
 //	Wired_Connection = true;
+
+
+
 	Wireless_timeout = HAL_GetTick();
 	if (tcp_recv_len > 0) {
 		recv_buf[sn][tcp_recv_len] = '\0';

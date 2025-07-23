@@ -5,6 +5,8 @@ GlobalParam global;
 
 uint8_t physical_conn = 0;
 
+volatile bool Erase_Buffer = false;
+
 W5500_GPIO_Config_t w5500_config = {
       .cs_port = W5500_CS_GPIO_Port,         // Replace with your CS GPIO port
       .cs_pin = W5500_CS_Pin,    // Replace with your CS GPIO pin
@@ -67,6 +69,7 @@ void loop(void){
 	if ( HAL_GetTick() - Wireless_timeout > 5000 )
 	{
 		HAL_GPIO_WritePin(NETWORK_MODE_GPIO_Port, NETWORK_MODE_Pin, SET);
+		Erase_Buffer = true ;
 	}
 	else
 	{
